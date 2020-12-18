@@ -1,12 +1,16 @@
-import { useContext, useEffect } from 'react';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
-import { Menu } from './components/menu/Menu';
-import Auth from './pages/Auth';
-import Home from './pages/Home';
-import { ApplicationContext, ApplicationProvider } from './domain/application.store';
-import { authGetMe } from './domain/authentication/authentication.actions';
+import { useContext, useEffect } from "react";
+import { Switch, Route, Redirect, useHistory } from "react-router-dom";
+import { Menu } from "./components/menu/Menu";
+import Auth from "./pages/Auth";
+import Home from "./pages/Home";
+import {
+  ApplicationContext,
+  ApplicationProvider,
+} from "./domain/application.store";
+import { authGetMe } from "./domain/authentication/authentication.actions";
+import Collection from "./pages/Collection";
 
-import './App.css';
+import "./App.css";
 
 const Wrapper = ({ component: Component, ...props }) => {
   const { dispatch } = useContext(ApplicationContext);
@@ -16,37 +20,40 @@ const Wrapper = ({ component: Component, ...props }) => {
     try {
       authGetMe(dispatch);
     } catch (error) {
-      history.push('/login');
+      history.push("/login");
     }
-  }, [])
-  return <Component {...props} />
-}
+  }, []);
+  return <Component {...props} />;
+};
 
 const ProtectedRoute = ({ component, ...rest }) => {
   const { state } = useContext(ApplicationContext);
   return (
-    <Route {...rest} render={props => {
-      if (state.isLoggedIn) {
-        return <Wrapper {...props} component={component} />
-      }
-      return <Redirect to="/login" />
-    }} />
-  )
-}
-
+    <Route
+      {...rest}
+      render={(props) => {
+        if (state.isLoggedIn) {
+          return <Wrapper {...props} component={component} />;
+        }
+        return <Redirect to="/login" />;
+      }}
+    />
+  );
+};
 
 function App() {
   return (
     <ApplicationProvider>
       <div className="App">
         <Switch>
-          <Route path='/login' component={Auth} />
-          <ProtectedRoute exact path='/' component={Home} />
+          <Route path="/login" component={Auth} />
+          <ProtectedRoute exact path="/" component={Home} />
+          <ProtectedRoute exact path="/profile" component={Collection} />
           <Redirect to="/" />
         </Switch>
         <Menu />
-      </div >
-    </ApplicationProvider >
+      </div>
+    </ApplicationProvider>
   );
 }
 
